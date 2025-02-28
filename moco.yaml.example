@@ -1,0 +1,26 @@
+---
+book_date: "2025-02-28"  # make sure this is a string!
+activities:
+  - Daily meeting
+  - Sprint preplanning Meeting
+  - Sprint planning Meeting
+projects:
+  - name: Customer A
+    id: 12345
+    tasks:
+      - name: Implementing a solution
+        id: 1111
+  - name: Customer B
+    id: 23456
+    tasks:
+      - name: Consulting
+        id: 3333
+      - name: Support
+        id: 5555
+  - name: Internal
+    id: 34567
+    tasks:
+      - name: Some fancy new development product
+        id: 1234
+      - name: Meetings
+        id: 42
