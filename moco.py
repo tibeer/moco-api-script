@@ -1,4 +1,10 @@
-#!/usr/bin/python
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "pyyaml==6.0.2",
+#     "requests==2.32.3",
+# ]
+# ///
 #
 # Script to book times in moco easily
 #
@@ -101,10 +107,10 @@ def print_menu(stdscr, selected_row_idx, menu_entries):
     date = get_book_date()
     hours = get_activity_sum()
     headline = f"Total hours on {date}: {hours}"
-    stdscr.addstr(0, w//2 - len(headline)//2, headline)
+    stdscr.addstr(0, w // 2 - len(headline) // 2, headline)
     for idx, row in enumerate(menu_entries):
-        x = w//2 - len(str(row))//2
-        y = h//2 - len(menu_entries)//2 + idx + 1
+        x = w // 2 - len(str(row)) // 2
+        y = h // 2 - len(menu_entries) // 2 + idx + 1
         if 0 <= y < h:
             if idx == selected_row_idx:
                 stdscr.attron(curses.color_pair(1))

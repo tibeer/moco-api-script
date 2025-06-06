@@ -5,10 +5,10 @@ Especially helpful for repeatedly occurring stuff.
 
 ## Usage
 
-1. Install the requirements from `requirements.txt`
+1. Install [uv](https://docs.astral.sh/uv/) (very nice python wrapper).
 2. Fill both `moco.yaml` and `secret.yaml` with some _activities_ that you often do.
 3. Fill the _project_ list manually, since most of the users won't have permissions to read those via API. This will help you navigate later.
-4. Run the script! `python3 moco.py`
+4. Run the script! `uv run --script moco.py`
 5. Press 'q' to quit.
 
 ## Screenshots of the flow
@@ -47,6 +47,6 @@ If you are lazy and have `jq` installed, use this to get the project ID and task
 
 ```sh
 curl --silent --request GET \
-  --url 'https://mycompany.mocoapp.com/api/v1/activities?from=2025-02-28&to=2025-02-28' \
-  --header 'authorization: Token token={{token}}' | jq -r '.[] | "\(.project.id) \(.project.name) \(.task.id) \(.task.name)"'
+  --url 'https://mycompany.mocoapp.com/api/v1/activities?from=2025-03-03&to=2025-03-03' \
+  --header "authorization: Token token=${token}" | jq -r '.[] | "\(.project.id) \(.project.name) \(.task.id) \(.task.name)"'
 ```
