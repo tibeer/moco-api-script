@@ -1,5 +1,5 @@
 ---
-book_date: "2025-02-28"  # make sure this is a string!
+#book_date: "2025-02-28"  # make sure this is a string, this is option. If not set or empty, today will be used.
 activities:
   - Daily meeting
   - Sprint preplanning Meeting
