@@ -15,11 +15,11 @@ Especially helpful for repeatedly occurring stuff.
 
 1. Select if you want to book the fast 5 days or the next 7 days
 
-    ![select a time range](image/step1.png)
+    ![select a time range](images/step1.png)
 
 2. Select a date
 
-    ![select a date](image/step2.png)
+    ![select a date](images/step2.png)
 
 3. Select a project
 
