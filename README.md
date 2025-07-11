@@ -13,23 +13,31 @@ Especially helpful for repeatedly occurring stuff.
 
 ## Screenshots of the flow
 
-1. Select a project
+1. Select if you want to book the fast 5 days or the next 7 days
 
-    ![select a project](images/step1.png)
+    ![select a time range](image/step1.png)
 
-2. Select a task
+2. Select a date
 
-    ![select a task](images/step2.png)
+    ![select a date](image/step2.png)
 
-3. Select the time you've spend
+3. Select a project
 
-    ![select time spend](images/step3.png)
+    ![select a project](images/step3.png)
 
-4. Select an activity
+4. Select a task
 
-    ![select an activity](images/step4.png)
+    ![select a task](images/step4.png)
 
-5. Repeat!
+5. Select the time you've spend
+
+    ![select time spend](images/step5.png)
+
+6. Select an activity
+
+    ![select an activity](images/step6.png)
+
+7. Repeat!
 
     ![repeat](images/repeat.png)
 
