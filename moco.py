@@ -12,6 +12,7 @@
 import curses
 import requests
 import yaml
+from datetime import datetime, timedelta
 
 config_file = './moco.yaml'
 secret_file = './secret.yaml'
@@ -65,14 +66,23 @@ def get_token() -> str:
         return config['token']
 
 
-def get_book_date() -> str:
+def get_base_date() -> str:
     with open(config_file, 'r') as file:
         config = yaml.safe_load(file)
         return config['book_date']
 
 
-def get_activity_sum() -> str:
-    book_date = get_book_date()
+def get_date_selection(base_date_str: str) -> list:
+    """Generates a list of the last 5 days from the base date."""
+    dates = []
+    base_date = datetime.strptime(base_date_str, "%Y-%m-%d")
+    for i in range(5):
+        day = base_date - timedelta(days=i)
+        dates.append(day.strftime("%Y-%m-%d"))
+    return dates
+
+
+def get_activity_sum(book_date: str) -> str:
     response = requests.get(
         url=get_moco_url() + f"/activities?from={book_date}&to={book_date}",
         headers={
@@ -85,14 +95,14 @@ def get_activity_sum() -> str:
     return str(total / 3600)
 
 
-def create_activity(project_id: int, task_id: int, activity: str, book_time: int) -> None:
+def create_activity(project_id: int, task_id: int, activity: str, book_time: int, book_date: str) -> None:
     requests.post(
         url=get_moco_url() + "/activities",
         headers={
             "Authorization": "Token token=" + get_token()
         },
         json={
-            "date": get_book_date(),
+            "date": book_date,
             "description": activity,
             "project_id": int(project_id),
             "task_id": int(task_id),
@@ -101,12 +111,9 @@ def create_activity(project_id: int, task_id: int, activity: str, book_time: int
     )
 
 
-def print_menu(stdscr, selected_row_idx, menu_entries):
+def print_menu(stdscr, selected_row_idx, menu_entries, headline: str):
     stdscr.clear()
     h, w = stdscr.getmaxyx()
-    date = get_book_date()
-    hours = get_activity_sum()
-    headline = f"Total hours on {date}: {hours}"
     stdscr.addstr(0, w // 2 - len(headline) // 2, headline)
     for idx, row in enumerate(menu_entries):
         x = w // 2 - len(str(row)) // 2
@@ -121,9 +128,9 @@ def print_menu(stdscr, selected_row_idx, menu_entries):
     stdscr.refresh()
 
 
-def navigate_menu(stdscr, menu_entries):
+def navigate_menu(stdscr, menu_entries, headline: str):
     current_row = 0
-    print_menu(stdscr, current_row, menu_entries)
+    print_menu(stdscr, current_row, menu_entries, headline)
     while True:
         key = stdscr.getch()
         if key == curses.KEY_UP and current_row > 0:
@@ -134,7 +141,7 @@ def navigate_menu(stdscr, menu_entries):
             return current_row
         elif key == ord('q'):
             exit(0)
-        print_menu(stdscr, current_row, menu_entries)
+        print_menu(stdscr, current_row, menu_entries, headline)
 
 
 def main(stdscr):
@@ -146,20 +153,36 @@ def main(stdscr):
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
     while True:
+        # --- New Date Selection ---
+        date_options = get_date_selection(get_base_date())
+        date_idx = navigate_menu(stdscr, date_options, "Select a Date")
+        selected_date = date_options[date_idx]
+
+        # --- Dynamic Headline with selected date ---
+        hours_on_day = get_activity_sum(selected_date)
+        projects_headline = f"Select Project for {selected_date} (Total: {hours_on_day}h)"
+
         projects = get_projects()
-        project_row = navigate_menu(stdscr, projects)
+        project_row = navigate_menu(stdscr, projects, projects_headline)
+
+        tasks_headline = f"Select Task for {selected_date}"
         tasks = get_tasks(project_row)
-        task_row = navigate_menu(stdscr, tasks)
+        task_row = navigate_menu(stdscr, tasks, tasks_headline)
+        
+        hours_headline = f"Select Hours for {selected_date}"
         hours = [round(x * 0.5, 1) for x in range(1, 21)]
-        hour_row = navigate_menu(stdscr, hours)
+        hour_row = navigate_menu(stdscr, hours, hours_headline)
+        
+        activities_headline = f"Select Activity for {selected_date}"
         activities = get_activities()
-        activity_row = navigate_menu(stdscr, activities)
+        activity_row = navigate_menu(stdscr, activities, activities_headline)
 
         create_activity(
             project_id=get_project_id(project_row),
             task_id=get_task_id(project_row, task_row),
             activity=get_activity_by_id(activity_row),
-            book_time=int(hours[hour_row] * 3600)
+            book_time=int(hours[hour_row] * 3600),
+            book_date=selected_date
         )
 
         stdscr.clear()

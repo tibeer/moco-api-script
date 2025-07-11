@@ -1,2 +1,6 @@
 moco.yaml
 secret.yaml
+
+# Python-Cache und virtuelle Umgebung
+__pycache__/
+.venv/
