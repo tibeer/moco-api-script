@@ -69,16 +69,26 @@ def get_token() -> str:
 def get_base_date() -> str:
     with open(config_file, 'r') as file:
         config = yaml.safe_load(file)
-        return config['book_date']
+        book_date = config.get('book_date', '').strip()
+        if book_date:
+            return book_date
+        else:
+            return datetime.today().strftime("%Y-%m-%d")
 
 
-def get_date_selection(base_date_str: str) -> list:
+def get_date_selection(base_date_str: str, direction: str) -> list:
     """Generates a list of the last 5 days from the base date."""
     dates = []
     base_date = datetime.strptime(base_date_str, "%Y-%m-%d")
-    for i in range(5):
-        day = base_date - timedelta(days=i)
-        dates.append(day.strftime("%Y-%m-%d"))
+
+    if direction == "Past 5 days":
+        for i in range(5):
+            day = base_date - timedelta(days=i)
+            dates.append(day.strftime("%Y-%m-%d"))
+    elif direction == "Next 7 days":
+        for i in range(7):
+            day = base_date + timedelta(days=i + 1)
+            dates.append(day.strftime("%Y-%m-%d"))
     return dates
 
 
@@ -152,9 +162,15 @@ def main(stdscr):
     curses.start_color()
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
+
+    # --- Select direction (past or future) ---
+    direction_options = ["Past 5 days", "Next 7 days"]
+    direction_idx = navigate_menu(stdscr, direction_options, "Select Date Range")
+    direction = direction_options[direction_idx]
+
     while True:
         # --- New Date Selection ---
-        date_options = get_date_selection(get_base_date())
+        date_options = get_date_selection(get_base_date(), direction)
         date_idx = navigate_menu(stdscr, date_options, "Select a Date")
         selected_date = date_options[date_idx]
 
