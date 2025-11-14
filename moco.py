@@ -140,18 +140,51 @@ def print_menu(stdscr, selected_row_idx, menu_entries, headline: str):
 
 def navigate_menu(stdscr, menu_entries, headline: str):
     current_row = 0
-    print_menu(stdscr, current_row, menu_entries, headline)
+    filtered_entries = menu_entries.copy()
+    search_mode = False
+    search_query = ""
+
+    print_menu(stdscr, current_row, filtered_entries, headline)
+
     while True:
         key = stdscr.getch()
+
+        if search_mode:
+            if key in (10, 13):  # Enter: exit search mode
+                search_mode = False
+                current_row = 0
+            elif key in (27,):  # Esc: cancel search
+                search_mode = False
+                search_query = ""
+                filtered_entries = menu_entries.copy()
+                current_row = 0
+            elif key in (curses.KEY_BACKSPACE, 127):
+                search_query = search_query[:-1]
+            else:
+                search_query += chr(key)
+
+            # Update filtered list
+            filtered_entries = [entry for entry in menu_entries if search_query.lower() in str(entry).lower()]
+            current_row = min(current_row, len(filtered_entries) - 1)
+            print_menu(stdscr, current_row, filtered_entries, f"{headline} /{search_query}")
+            continue
+
+        # --- Normal navigation ---
         if key == curses.KEY_UP and current_row > 0:
             current_row -= 1
-        elif key == curses.KEY_DOWN and current_row < len(menu_entries) - 1:
+        elif key == curses.KEY_DOWN and current_row < len(filtered_entries) - 1:
             current_row += 1
         elif key == curses.KEY_ENTER or key in [10, 13]:
-            return current_row
+            return menu_entries.index(filtered_entries[current_row])
         elif key == ord('q'):
             exit(0)
-        print_menu(stdscr, current_row, menu_entries, headline)
+        elif key == ord('/'):  # Start search mode
+            search_mode = True
+            search_query = ""
+            filtered_entries = menu_entries.copy()
+
+        print_menu(stdscr, current_row, filtered_entries, headline)
+
 
 
 def main(stdscr):

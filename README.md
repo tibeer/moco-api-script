@@ -9,7 +9,8 @@ Especially helpful for repeatedly occurring stuff.
 2. Fill both `moco.yaml` and `secret.yaml` with some _activities_ that you often do.
 3. Fill the _project_ list manually, since most of the users won't have permissions to read those via API. This will help you navigate later.
 4. Run the script! `uv run --script moco.py`
-5. Press 'q' to quit.
+5. Use the arrow keys no navigate, return to select or "/" to filter the displayed list.
+6. Press 'q' to quit.
 
 ## Screenshots of the flow
 
